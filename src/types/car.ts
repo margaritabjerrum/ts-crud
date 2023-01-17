@@ -2,7 +2,7 @@ type Car = {
   id: string,
   price: number,
   year: number,
-  modelID: string,
+  modelId: string,
 };
 
 export default Car;
