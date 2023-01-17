@@ -32,7 +32,7 @@ class Table<T extends TableRowData> {
       .map((name) => `<th>${name}</th>`)
       .join('');
     this.thead.innerHTML = `
-    <tr class="text-center h4">
+    <tr class="text-center h4 table-dark">
       <th colspan="${columnsNames.length}">${this.props.title}</th>
     </tr>
     <tr>${columnsHtmlStr}</tr>`;
@@ -52,7 +52,7 @@ class Table<T extends TableRowData> {
   public initialize = () => {
     this.initializeHead();
     this.initializeBody();
-    this.htmlElement.className = 'table table-striped';
+    this.htmlElement.className = 'table table-striped table-secondary';
     this.htmlElement.append(
       this.thead,
       this.tbody,
