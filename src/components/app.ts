@@ -1,12 +1,29 @@
+import CarsCollection from '../helpers/cars-collection';
+import cars from '../data/cars';
+import brands from '../data/brands';
+import models from '../data/models';
+
 class App {
   private htmlElement: HTMLElement;
 
-  constructor(selector: string) {
-    const foundElement = document.querySelector<HTMLElement>(selector);
+  private carsCollection: CarsCollection;
 
-    if (foundElement === null) throw new Error(`Nerastas elementas su selektoriumi '${selector}'`);
+  constructor(selector: string) {
+    const foundElement = document.querySelector(selector);
+
+    if (foundElement === null) throw new Error(`Element was not found with selector '${selector}'`);
+
+    if (!(foundElement instanceof HTMLElement)) {
+      throw new Error(`HTML element was not found with selector '${selector}'`);
+    }
 
     this.htmlElement = foundElement;
+
+    this.carsCollection = new CarsCollection({
+      cars,
+      brands,
+      models,
+    });
   }
 
   initialize = (): void => {
