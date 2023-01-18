@@ -12,6 +12,8 @@ const brandToOption = ({ id, title }: Brand): Option => ({
   text: title,
 });
 
+const ALL_BRANDS_ID = '-1';
+const ALL_BRANDS_TITLE = 'All Cars';
 class App {
   private htmlElement: HTMLElement;
 
@@ -39,13 +41,6 @@ class App {
     const container = document.createElement('div');
     container.className = 'container my-5 d-flex flex-column gap-4';
 
-    const selectField = new SelectField({
-      options: this.carsCollection.brands.map(brandToOption),
-      onChange: (_, brandId) => {
-        const selectedCars = this.carsCollection.getByBrandId(brandId);
-      },
-    });
-
     const table = new Table({
       title: 'All Cars',
       columns: {
@@ -56,6 +51,23 @@ class App {
         price: 'Price',
       },
       rowsData: this.carsCollection.allCars.map(stringifyProps),
+    });
+
+    const selectField = new SelectField({
+      options: [
+        { text: ALL_BRANDS_TITLE, value: ALL_BRANDS_ID },
+        ...this.carsCollection.brands.map(brandToOption),
+      ],
+      onChange: (_, brandId, { text: brandTitle }) => {
+        const selectedCars = brandId === ALL_BRANDS_ID
+        ? this.carsCollection.allCars
+        : this.carsCollection.getByBrandId(brandId);
+
+        table.updateProps({
+          rowsData: selectedCars.map(stringifyProps),
+          title: brandTitle,
+        });
+      },
     });
 
     container.append(
