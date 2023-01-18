@@ -10,25 +10,25 @@ type CarsCollectionProps = {
 };
 
 class CarsCollection {
-  private cars: Car[];
+  private privateCars: Car[];
 
-  private brands: Brand[];
+  private privateBrands: Brand[];
 
-  private models: Model[];
+  private privateModels: Model[];
 
   constructor({
     cars,
     brands,
     models,
   }: CarsCollectionProps) {
-    this.cars = JSON.parse(JSON.stringify(cars));
-    this.brands = JSON.parse(JSON.stringify(brands));
-    this.models = JSON.parse(JSON.stringify(models));
+    this.privateCars = JSON.parse(JSON.stringify(cars));
+    this.privateBrands = JSON.parse(JSON.stringify(brands));
+    this.privateModels = JSON.parse(JSON.stringify(models));
   }
 
   private joinCar = ({ modelId, ...car }: Car): CarJoined => {
-    const carModel = this.models.find(({ id }) => id === modelId);
-    const carBrand = this.brands.find(({ id }) => id === carModel?.brandId);
+    const carModel = this.privateModels.find(({ id }) => id === modelId);
+    const carBrand = this.privateBrands.find(({ id }) => id === carModel?.brandId);
 
     return {
       ...car,
@@ -38,7 +38,11 @@ class CarsCollection {
   };
 
   public get allCars(): CarJoined[] {
-    return this.cars.map(this.joinCar);
+    return this.privateCars.map(this.joinCar);
+  }
+
+  public get brands(): Brand[] {
+    return JSON.parse(JSON.stringify(this.privateBrands));
   }
 }
 
