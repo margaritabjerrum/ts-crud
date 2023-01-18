@@ -41,6 +41,9 @@ class App {
 
     const selectField = new SelectField({
       options: this.carsCollection.brands.map(brandToOption),
+      onChange: (_, brandId) => {
+        console.log(`changed ${brandId}`);
+      },
     });
 
     const table = new Table({
