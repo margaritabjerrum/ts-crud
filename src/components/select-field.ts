@@ -3,7 +3,7 @@ export type Option = {
   value: string,
 };
 
-type SelectFieldProps = {
+export type SelectFieldProps = {
   options: Option[],
   onChange: (event: Event, value: string, option: Option) => void,
 };

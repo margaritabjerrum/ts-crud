@@ -3,9 +3,10 @@ import cars from '../data/cars';
 import brands from '../data/brands';
 import models from '../data/models';
 import Table from './table';
-import stringifyProps from '../helpers/stringify-props';
-import SelectField, { type Option } from './select-field';
+import stringifyProps, { type StringifiedObject } from '../helpers/stringify-props';
+import SelectField, { type Option, type SelectFieldProps } from './select-field';
 import type Brand from '../types/brand';
+import type CarJoined from '../types/car-joined';
 
 const brandToOption = ({ id, title }: Brand): Option => ({
   value: id,
@@ -19,6 +20,10 @@ class App {
 
   private carsCollection: CarsCollection;
 
+  private carsTable: Table<StringifiedObject<CarJoined>>;
+
+  private selectedBrandId: string;
+
   constructor(selector: string) {
     const foundElement = document.querySelector(selector);
 
@@ -29,19 +34,14 @@ class App {
     }
 
     this.htmlElement = foundElement;
-
+    this.selectedBrandId = ALL_BRANDS_ID;
     this.carsCollection = new CarsCollection({
       cars,
       brands,
       models,
     });
-  }
 
-  initialize = (): void => {
-    const container = document.createElement('div');
-    container.className = 'container my-5 d-flex flex-column gap-4';
-
-    const table = new Table({
+    this.carsTable = new Table({
       title: 'All Cars',
       columns: {
         id: '#',
@@ -51,30 +51,52 @@ class App {
         price: 'Price',
       },
       rowsData: this.carsCollection.allCars.map(stringifyProps),
+      onDelete: this.handleCarDelete,
     });
+  }
+
+  private handleCarDelete = (carId: string): void => {
+    this.carsCollection.deleteCarById(carId);
+    this.update();
+  };
+
+  private handleBrandChange: SelectFieldProps['onChange'] = (_, brandId) => {
+    this.selectedBrandId = brandId;
+    this.update();
+  };
+
+  public initialize = (): void => {
+    const container = document.createElement('div');
+    container.className = 'container my-5 d-flex flex-column gap-4';
 
     const selectField = new SelectField({
       options: [
         { text: ALL_BRANDS_TITLE, value: ALL_BRANDS_ID },
         ...this.carsCollection.brands.map(brandToOption),
       ],
-      onChange: (_, brandId, { text: brandTitle }) => {
-        const selectedCars = brandId === ALL_BRANDS_ID
-        ? this.carsCollection.allCars
-        : this.carsCollection.getByBrandId(brandId);
-
-        table.updateProps({
-          rowsData: selectedCars.map(stringifyProps),
-          title: brandTitle,
-        });
-      },
+      onChange: this.handleBrandChange,
     });
 
     container.append(
       selectField.htmlElement,
-      table.htmlElement,
+      this.carsTable.htmlElement,
       );
     this.htmlElement.append(container);
+  };
+
+  public update = () => {
+    const selectedCars = this.selectedBrandId === ALL_BRANDS_ID
+    ? this.carsCollection.allCars
+    : this.carsCollection.getByBrandId(this.selectedBrandId);
+
+    const brandTitle = this.selectedBrandId === ALL_BRANDS_ID
+      ? ALL_BRANDS_TITLE
+      : this.carsCollection.getCarById(this.selectedBrandId).title;
+
+    this.carsTable.updateProps({
+      rowsData: selectedCars.map(stringifyProps),
+      title: brandTitle,
+    });
   };
 }
 
