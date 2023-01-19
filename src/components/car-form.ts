@@ -1,3 +1,5 @@
+import TextField from './text-field';
+
 class CarForm {
   public htmlElement: HTMLFormElement;
 
@@ -7,6 +9,16 @@ class CarForm {
   }
 
   public initialize = () => {
+    const priceTextField = new TextField({
+      labelText: 'Price',
+      name: 'price',
+    });
+
+    const yearTextField = new TextField({
+      labelText: 'Year',
+      name: 'year',
+    });
+
     this.htmlElement.className = 'card d-flex flex-column gap-3 p-3';
     this.htmlElement.style.width = '450px';
     this.htmlElement.innerHTML = `<h2 class="h3 text-center">Add New Car</h2>
