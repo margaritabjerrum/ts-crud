@@ -37,7 +37,11 @@ class FormSelectField {
 
     this.htmlElement.innerHTML = `
       <label for="select-${this.id}">${this.props.labelText}</label>
-      <select class="form-select" id="${this.id}" name="${this.props.name}">
+      <select 
+        class="form-select" 
+        id="${this.id}" 
+        name="${this.props.name}" 
+        value="${this.props.initialValue ?? ''}">
         ${optionsHtml}`;
   };
 

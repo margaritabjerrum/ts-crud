@@ -81,7 +81,17 @@ class App {
       onChange: this.handleBrandChange,
     });
 
-    const carForm = new CarForm();
+    const carForm = new CarForm({
+      title: 'Add New Car',
+      submitBtnText: 'Add',
+      values: {
+        brand: '',
+        model: '',
+        price: '',
+        year: '',
+      },
+      onSubmit: (formValues) => console.log(formValues),
+    });
 
     uxContainer.append(
       this.carsTable.htmlElement,
