@@ -1,14 +1,61 @@
+import FormSelectField from './form-select-field';
 import TextField from './text-field';
 
 class CarForm {
   public htmlElement: HTMLFormElement;
 
+  private formTitleHtmlElement: HTMLHeadingElement;
+
+  private submitBtn: HTMLButtonElement;
+
   constructor() {
     this.htmlElement = document.createElement('form');
+    this.formTitleHtmlElement = document.createElement('h2');
+    this.submitBtn = document.createElement('button');
+
     this.initialize();
+    this.renderView();
   }
 
-  public initialize = () => {
+  private initialize = () => {
+    this.formTitleHtmlElement.className = 'h3 text-center';
+    this.formTitleHtmlElement.innerText = 'Add New Car';
+
+    this.submitBtn.className = 'btn btn-primary';
+    this.submitBtn.innerText = 'Add';
+    this.submitBtn.setAttribute('type', 'submit');
+
+    this.htmlElement.className = 'card d-flex flex-column gap-3 p-3';
+    this.htmlElement.style.width = '450px';
+  };
+
+  private renderView = () => {
+    const brandSelectField = new FormSelectField({
+      labelText: 'Brand',
+      name: 'brand',
+      options: [
+        { label: 'AAA', value: '1' },
+        { label: 'BMW', value: '2' },
+        { label: 'Subaru', value: '3' },
+      ],
+    });
+
+    const modelSelectField = new FormSelectField({
+      labelText: 'Model',
+      name: 'model',
+      options: [
+        { label: 'AAA', value: '1' },
+        { label: 'Astra', value: '2' },
+        { label: 'Insignia', value: '3' },
+        { label: 'X1', value: '4' },
+        { label: 'X2', value: '5' },
+        { label: 'X3', value: '6' },
+        { label: 'Impreza', value: '7' },
+        { label: 'Forester', value: '8' },
+        { label: 'Ascent', value: '9' },
+      ],
+    });
+
     const priceTextField = new TextField({
       labelText: 'Price',
       name: 'price',
@@ -19,40 +66,14 @@ class CarForm {
       name: 'year',
     });
 
-    this.htmlElement.className = 'card d-flex flex-column gap-3 p-3';
-    this.htmlElement.style.width = '450px';
-    this.htmlElement.innerHTML = `<h2 class="h3 text-center">Add New Car</h2>
-    <div class="d-flex flex-column gap-2">
-      <div class="form-group">
-        <label for="select-2">Brand</label>
-        <select class="form-select" id="select-2" name="brand">
-          <option value="1">Opel</option>
-          <option value="2">BMW</option>
-          <option value="3">Subaru</option></select>
-      </div>
-      <div class="form-group">
-        <label for="select-3">Model</label>
-        <select class="form-select" id="select-3" name="model">
-          <option value="1">Zafira</option><option value="2">Astra</option>
-          <option value="3">Insignia</option>
-          <option value="4">X1</option>
-          <option value="5">X2</option>
-          <option value="6">X3</option>
-          <option value="7">Impreza</option>
-          <option value="8">Forester</option>
-          <option value="9">Ascent</option>
-        </select>
-      </div>
-      <div>
-        <label for="input-TextField-1" class="form-label">Price</label>
-        <input id="input-TextField-1" class="form-control" type="text" name="price">
-      </div>
-      <div>
-        <label for="input-TextField-2" class="form-label">Year</label>
-        <input id="input-TextField-2" class="form-control" type="text" name="year">
-      </div>
-    </div>
-     <button class="btn btn-primary">Add</button>`;
+    this.htmlElement.append(
+      this.formTitleHtmlElement,
+      brandSelectField.htmlElement,
+      modelSelectField.htmlElement,
+      priceTextField.htmlElement,
+      yearTextField.htmlElement,
+      this.submitBtn,
+    );
   };
 }
 
