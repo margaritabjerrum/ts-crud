@@ -7,6 +7,7 @@ import stringifyProps, { type StringifiedObject } from '../helpers/stringify-pro
 import SelectField, { type Option, type SelectFieldProps } from './select-field';
 import type Brand from '../types/brand';
 import type CarJoined from '../types/car-joined';
+import CarForm from './car-form';
 
 const brandToOption = ({ id, title }: Brand): Option => ({
   value: id,
@@ -69,6 +70,9 @@ class App {
     const container = document.createElement('div');
     container.className = 'container my-5 d-flex flex-column gap-4';
 
+    const uxContainer = document.createElement('div');
+    uxContainer.className = 'd-flex justify-content-center gap-4 align-items-start';
+
     const selectField = new SelectField({
       options: [
         { text: ALL_BRANDS_TITLE, value: ALL_BRANDS_ID },
@@ -77,9 +81,16 @@ class App {
       onChange: this.handleBrandChange,
     });
 
+    const carForm = new CarForm();
+
+    uxContainer.append(
+      this.carsTable.htmlElement,
+      carForm.htmlElement,
+      );
+
     container.append(
       selectField.htmlElement,
-      this.carsTable.htmlElement,
+      uxContainer,
       );
     this.htmlElement.append(container);
   };
