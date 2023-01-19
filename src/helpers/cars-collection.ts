@@ -9,34 +9,29 @@ type CarsCollectionProps = {
   models: Model[],
 };
 
+export type CarProps = {
+  brandId: string,
+  modelId: string,
+  price: number,
+  year: number
+};
+
+const createId = (): string => String(Math.floor(Math.random() * 100000000000000));
+
 class CarsCollection {
-  private privateCars: Car[];
-
-  private privateBrands: Brand[];
-
-  private privateModels: Model[];
-
-  constructor({
-    cars,
-    brands,
-    models,
-  }: CarsCollectionProps) {
-    this.privateCars = JSON.parse(JSON.stringify(cars));
-    this.privateBrands = JSON.parse(JSON.stringify(brands));
-    this.privateModels = JSON.parse(JSON.stringify(models));
-  }
+  constructor(private props: CarsCollectionProps) { }
 
   public get allCars(): CarJoined[] {
-    return this.privateCars.map(this.joinCar);
+    return this.props.cars.map(this.joinCar);
   }
 
   public get brands(): Brand[] {
-    return JSON.parse(JSON.stringify(this.privateBrands));
+    return JSON.parse(JSON.stringify(this.props.brands));
   }
 
   private joinCar = ({ modelId, ...car }: Car): CarJoined => {
-    const carModel = this.privateModels.find(({ id }) => id === modelId);
-    const carBrand = this.privateBrands.find(({ id }) => id === carModel?.brandId);
+    const carModel = this.props.models.find(({ id }) => id === modelId);
+    const carBrand = this.props.brands.find(({ id }) => id === carModel?.brandId);
 
     return {
       ...car,
@@ -46,15 +41,15 @@ class CarsCollection {
   };
 
   public deleteCarById = (carId: string): void => {
-    this.privateCars = this.privateCars.filter((car) => car.id !== carId);
+    this.props.cars = this.props.cars.filter((car) => car.id !== carId);
   };
 
   public getByBrandId = (brandId: string): CarJoined[] => {
-    const brandModelsIds = this.privateModels
+    const brandModelsIds = this.props.models
       .filter((model) => model.brandId === brandId)
       .map((model) => model.id);
 
-    const joindCars = this.privateCars
+    const joindCars = this.props.cars
       .filter((car) => brandModelsIds.includes(car.modelId))
       .map(this.joinCar);
 
@@ -62,13 +57,31 @@ class CarsCollection {
   };
 
   public getCarById = (brandId: string): Brand => {
-    const brand = this.privateBrands.find(({ id }) => id === brandId);
+    const brand = this.props.brands.find(({ id }) => id === brandId);
 
     if (brand === undefined) {
       throw new Error(`Brand with ID '${brandId}' was not found`);
     }
 
     return brand;
+  };
+
+  public add = ({ modelId, brandId, ...carProps }: CarProps): void => {
+    const { models, brands, cars } = this.props;
+    const model = models.find((m) => m.id === modelId);
+    const brand = brands.find((b) => b.id === brandId);
+
+    if (!model || !brand) {
+      throw new Error('Netinkami duomenys sukurti automobilį');
+    }
+
+    const newCar: Car = {
+      id: createId(),
+      ...carProps,
+      modelId,
+    };
+
+    cars.push(newCar);
   };
 }
 

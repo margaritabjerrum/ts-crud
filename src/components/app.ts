@@ -1,4 +1,4 @@
-import CarsCollection from '../helpers/cars-collection';
+import CarsCollection, { type CarProps } from '../helpers/cars-collection';
 import cars from '../data/cars';
 import brands from '../data/brands';
 import models from '../data/models';
@@ -7,7 +7,7 @@ import stringifyProps, { type StringifiedObject } from '../helpers/stringify-pro
 import SelectField, { type Option, type SelectFieldProps } from './select-field';
 import type Brand from '../types/brand';
 import type CarJoined from '../types/car-joined';
-import CarForm from './car-form';
+import CarForm, { type Values } from './car-form';
 
 const brandToOption = ({ id, title }: Brand): Option => ({
   value: id,
@@ -66,6 +66,21 @@ class App {
     this.update();
   };
 
+  private handleCarCreate = ({
+    brand, model, price, year,
+  }: Values): void => {
+    const carProps: CarProps = {
+      brandId: brand,
+      modelId: model,
+      price: Number(price),
+      year: Number(year),
+    };
+
+    this.carsCollection.add(carProps);
+
+    this.update();
+  };
+
   public initialize = (): void => {
     const container = document.createElement('div');
     container.className = 'container my-5 d-flex flex-column gap-4';
@@ -90,7 +105,7 @@ class App {
         price: '',
         year: '',
       },
-      onSubmit: (formValues) => console.log(formValues),
+      onSubmit: this.handleCarCreate,
     });
 
     uxContainer.append(

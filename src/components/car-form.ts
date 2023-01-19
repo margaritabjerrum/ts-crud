@@ -1,5 +1,7 @@
 import FormSelectField from './form-select-field';
 import TextField from './text-field';
+import brands from '../data/brands';
+import models from '../data/models';
 
 export type Values = {
   brand: string,
@@ -8,7 +10,7 @@ export type Values = {
   year: string,
 };
 
-type CarFormProps = {
+export type CarFormProps = {
   values: Values,
   title: string,
   submitBtnText: string,
@@ -42,28 +44,14 @@ class CarForm {
     this.brandSelectField = new FormSelectField({
       labelText: 'Brand',
       name: 'brand',
-      options: [
-        { label: 'AAA', value: '1' },
-        { label: 'BMW', value: '2' },
-        { label: 'Subaru', value: '3' },
-      ],
+      options: brands.map(({ id, title }) => ({ label: title, value: id })),
       initialValue: props.values.brand,
     });
 
     this.modelSelectField = new FormSelectField({
       labelText: 'Model',
       name: 'model',
-      options: [
-        { label: 'AAA', value: '1' },
-        { label: 'Astra', value: '2' },
-        { label: 'Insignia', value: '3' },
-        { label: 'X1', value: '4' },
-        { label: 'X2', value: '5' },
-        { label: 'X3', value: '6' },
-        { label: 'Impreza', value: '7' },
-        { label: 'Forester', value: '8' },
-        { label: 'Ascent', value: '9' },
-      ],
+      options: models.map(({ id, title }) => ({ label: title, value: id })),
       initialValue: props.values.model,
     });
 
@@ -105,6 +93,7 @@ class CarForm {
     };
 
     this.props.onSubmit(formValues);
+    this.htmlElement.reset();
   };
 
   private initialize = () => {
