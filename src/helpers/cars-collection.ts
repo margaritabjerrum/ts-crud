@@ -67,12 +67,11 @@ class CarsCollection {
   };
 
   public add = ({ modelId, brandId, ...carProps }: CarProps): void => {
-    const { models, brands, cars } = this.props;
-    const model = models.find((m) => m.id === modelId);
-    const brand = brands.find((b) => b.id === brandId);
+    const model = this.props.models.find((m) => m.id === modelId);
+    const brand = this.props.brands.find((b) => b.id === brandId);
 
     if (!model || !brand) {
-      throw new Error('Netinkami duomenys sukurti automobilį');
+      throw new Error('Wrong data for car creation');
     }
 
     const newCar: Car = {
@@ -81,7 +80,7 @@ class CarsCollection {
       modelId,
     };
 
-    cars.push(newCar);
+    this.props.cars.push(newCar);
   };
 }
 
