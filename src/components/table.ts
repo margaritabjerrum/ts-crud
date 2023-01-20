@@ -7,7 +7,9 @@ export type TableProps<Type extends TableRowData> = {
   title: string,
   columns: Type,
   rowsData: Type[],
+  editedCarId: string | null,
   onDelete: (id: string) => void,
+  onEdit: (id: string) => void,
 };
 
 class Table<T extends TableRowData> {
@@ -30,7 +32,7 @@ class Table<T extends TableRowData> {
   }
 
   public initialize = () => {
-    this.htmlElement.className = 'table table-striped table-secondary';
+    this.htmlElement.className = 'table table-striped';
     this.htmlElement.append(
       this.thead,
       this.tbody,
@@ -54,23 +56,41 @@ class Table<T extends TableRowData> {
     const keys = Object.keys(this.props.columns);
 
     this.props.rowsData.forEach((rowData) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = keys
-    .map((key) => `<td>${rowData[key]}</td>`)
-    .join('');
+      const tr = document.createElement('tr');
+      tr.innerHTML = keys
+      .map((key) => `<td>${rowData[key]}</td>`)
+      .join('');
 
-    const delBtn = document.createElement('button');
-    delBtn.className = 'btn btn-danger btn-sm';
-    delBtn.innerText = '🗑';
-    delBtn.addEventListener('click', () => {
-      this.props.onDelete(rowData.id);
-    });
+      const rowIsBeingEdited = this.props.editedCarId === rowData.id;
+      if (rowIsBeingEdited) {
+        tr.style.backgroundColor = '#fff2cf';
+      }
 
-    const lastTd = document.createElement('td');
-      lastTd.append(delBtn);
-      tr.append(lastTd);
-      this.tbody.append(tr);
-    });
+      const updBtn = document.createElement('button');
+      updBtn.style.width = '37.23px';
+      updBtn.className = `btn btn-${rowIsBeingEdited ? 'secondary' : 'warning'} btn-sm`;
+      updBtn.innerText = `${rowIsBeingEdited ? '🗙' : '✎'}`;
+      updBtn.addEventListener('click', () => {
+        this.props.onEdit(rowData.id);
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-danger btn-sm';
+      delBtn.innerText = '🗑';
+      delBtn.addEventListener('click', () => {
+        this.props.onDelete(rowData.id);
+      });
+
+      const btnContainer = document.createElement('div');
+      btnContainer.className = 'd-flex gap-2';
+
+      btnContainer.append(updBtn, delBtn);
+
+      const lastTd = document.createElement('td');
+        lastTd.append(btnContainer);
+        tr.append(lastTd);
+        this.tbody.append(tr);
+      });
   };
 
   public renderView = () => {

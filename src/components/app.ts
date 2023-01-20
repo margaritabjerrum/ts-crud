@@ -2,7 +2,7 @@ import CarsCollection, { type CarProps } from '../helpers/cars-collection';
 import cars from '../data/cars';
 import brands from '../data/brands';
 import models from '../data/models';
-import Table from './table';
+import Table, { type TableProps, type TableRowData } from './table';
 import stringifyProps, { type StringifiedObject } from '../helpers/stringify-props';
 import SelectField, { type Option, type SelectFieldProps } from './select-field';
 import type Brand from '../types/brand';
@@ -25,6 +25,8 @@ class App {
 
   private selectedBrandId: string;
 
+  private editedCarId: string | null;
+
   constructor(selector: string) {
     const foundElement = document.querySelector(selector);
 
@@ -36,6 +38,8 @@ class App {
 
     this.htmlElement = foundElement;
     this.selectedBrandId = ALL_BRANDS_ID;
+    this.editedCarId = null;
+
     this.carsCollection = new CarsCollection({
       cars,
       brands,
@@ -52,17 +56,25 @@ class App {
         price: 'Price',
       },
       rowsData: this.carsCollection.allCars.map(stringifyProps),
+      editedCarId: this.editedCarId,
       onDelete: this.handleCarDelete,
+      onEdit: this.handleCarEdit,
     });
   }
 
-  private handleCarDelete = (carId: string): void => {
+  private handleCarDelete: TableProps<TableRowData>['onDelete'] = (carId) => {
     this.carsCollection.deleteCarById(carId);
     this.update();
   };
 
   private handleBrandChange: SelectFieldProps['onChange'] = (_, brandId) => {
     this.selectedBrandId = brandId;
+    this.update();
+  };
+
+  private handleCarEdit: TableProps<TableRowData>['onEdit'] = (carId) => {
+    const carIsAlreadyEdited = this.editedCarId === carId;
+    this.editedCarId = carIsAlreadyEdited ? null : carId;
     this.update();
   };
 
@@ -130,8 +142,9 @@ class App {
       : this.carsCollection.getCarById(this.selectedBrandId).title;
 
     this.carsTable.updateProps({
-      rowsData: selectedCars.map(stringifyProps),
       title: brandTitle,
+      rowsData: selectedCars.map(stringifyProps),
+      editedCarId: this.editedCarId,
     });
   };
 }
