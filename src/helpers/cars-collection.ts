@@ -82,6 +82,33 @@ class CarsCollection {
 
     this.props.cars.push(newCar);
   };
+
+  public update = (carId: string, { brandId, modelId, ...props }: CarProps) => {
+    const { cars, models, brands } = this.props;
+
+    const updatedCarIndex = cars.findIndex((c) => c.id === carId);
+    if (updatedCarIndex === -1) {
+      throw new Error(`Car with id '${carId}' was not found`);
+    }
+
+    const model = models.find((m) => m.id === modelId);
+    if (!model) {
+      throw new Error(`Car with id '${modelId}' was not found`);
+    }
+
+    const brand = brands.find((b) => b.id === brandId);
+    if (!brand) {
+      throw new Error(`Car with id '${brandId}' was not found`);
+    }
+
+    const updatedCar: Car = {
+      ...cars[updatedCarIndex],
+      ...props,
+      modelId,
+    };
+
+    this.props.cars.splice(updatedCarIndex, 1, updatedCar);
+  };
 }
 
 export default CarsCollection;

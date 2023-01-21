@@ -30,7 +30,11 @@ class FormSelectField {
 
   public renderView = () => {
     const optionsHtml = this.props.options
-      .map(({ label, value }) => `<option value="${value}">${label}</option>`)
+      .map(({ label, value }) => `
+      <option value="${value}" 
+      ${this.props.initialValue === value ? 'selected' : ''}>
+      ${label}
+      </option>`)
       .join('');
 
     this.htmlElement.className = 'form-group';
@@ -41,7 +45,6 @@ class FormSelectField {
         class="form-select" 
         id="${this.id}" 
         name="${this.props.name}" 
-        value="${this.props.initialValue ?? ''}">
         ${optionsHtml}`;
   };
 

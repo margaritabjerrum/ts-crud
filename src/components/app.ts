@@ -23,6 +23,8 @@ class App {
 
   private carsTable: Table<StringifiedObject<CarJoined>>;
 
+  private carForm: CarForm;
+
   private selectedBrandId: string;
 
   private editedCarId: string | null;
@@ -60,21 +62,39 @@ class App {
       onDelete: this.handleCarDelete,
       onEdit: this.handleCarEdit,
     });
+
+    this.carForm = new CarForm({
+      title: 'Add New Car',
+      submitBtnText: 'Add',
+      values: {
+        brand: '',
+        model: '',
+        price: '',
+        year: '',
+      },
+      isEdited: Boolean(this.editedCarId),
+      onSubmit: this.handleCarCreate,
+    });
   }
 
   private handleCarDelete: TableProps<TableRowData>['onDelete'] = (carId) => {
     this.carsCollection.deleteCarById(carId);
+    this.editedCarId = null;
+
     this.update();
   };
 
   private handleBrandChange: SelectFieldProps['onChange'] = (_, brandId) => {
     this.selectedBrandId = brandId;
+    this.editedCarId = null;
+
     this.update();
   };
 
   private handleCarEdit: TableProps<TableRowData>['onEdit'] = (carId) => {
     const carIsAlreadyEdited = this.editedCarId === carId;
     this.editedCarId = carIsAlreadyEdited ? null : carId;
+
     this.update();
   };
 
@@ -90,7 +110,27 @@ class App {
 
     this.carsCollection.add(carProps);
 
+    this.editedCarId = null;
+
     this.update();
+  };
+
+  private handleCarUpdate = ({
+    brand, model, price, year,
+  }: Values): void => {
+    if (this.editedCarId) {
+      const carProps: CarProps = {
+        brandId: brand,
+        modelId: model,
+        price: Number(price),
+        year: Number(year),
+      };
+
+      this.carsCollection.update(this.editedCarId, carProps);
+      this.editedCarId = null;
+
+      this.update();
+    }
   };
 
   public initialize = (): void => {
@@ -108,21 +148,9 @@ class App {
       onChange: this.handleBrandChange,
     });
 
-    const carForm = new CarForm({
-      title: 'Add New Car',
-      submitBtnText: 'Add',
-      values: {
-        brand: '',
-        model: '',
-        price: '',
-        year: '',
-      },
-      onSubmit: this.handleCarCreate,
-    });
-
     uxContainer.append(
       this.carsTable.htmlElement,
-      carForm.htmlElement,
+      this.carForm.htmlElement,
       );
 
     container.append(
@@ -133,6 +161,8 @@ class App {
   };
 
   public update = () => {
+    const { editedCarId } = this;
+
     const selectedCars = this.selectedBrandId === ALL_BRANDS_ID
     ? this.carsCollection.allCars
     : this.carsCollection.getByBrandId(this.selectedBrandId);
@@ -146,6 +176,46 @@ class App {
       rowsData: selectedCars.map(stringifyProps),
       editedCarId: this.editedCarId,
     });
+
+    if (editedCarId) {
+      const editedCar = cars.find((c) => c.id === editedCarId);
+      if (!editedCar) {
+        throw new Error('Car not found');
+      }
+
+      const model = models.find((m) => m.id === editedCar.modelId);
+
+      if (!model) {
+        throw new Error('Car not found');
+      }
+
+      this.carForm.updateProps({
+        title: 'Update Car',
+        submitBtnText: 'Update',
+        values: {
+          brand: model.brandId,
+          model: model.id,
+          price: String(editedCar.price),
+          year: String(editedCar.year),
+        },
+        isEdited: true,
+        onSubmit: this.handleCarUpdate,
+      });
+    } else {
+      const initialBrandId = brands[0].id;
+      this.carForm.updateProps({
+        title: 'Add New Car',
+        submitBtnText: 'Add',
+        values: {
+          brand: initialBrandId,
+          model: models.filter((m) => m.brandId === initialBrandId)[0].id,
+          price: '',
+          year: '',
+        },
+        isEdited: false,
+        onSubmit: this.handleCarCreate,
+      });
+    }
   };
 }
 

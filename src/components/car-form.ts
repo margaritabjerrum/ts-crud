@@ -15,6 +15,7 @@ export type CarFormProps = {
   title: string,
   submitBtnText: string,
   onSubmit: (values: Values) => void,
+  isEdited: boolean,
 };
 
 class CarForm {
@@ -127,11 +128,24 @@ class CarForm {
       },
      } = this.props;
 
+     if (this.props.isEdited) {
+      this.htmlElement.classList.add('border');
+      this.htmlElement.classList.add('border-warning');
+      this.submitBtn.classList.add('btn-warning');
+      this.submitBtn.classList.remove('btn-success');
+    } else {
+      this.htmlElement.classList.remove('border');
+      this.htmlElement.classList.remove('border-warning');
+      this.submitBtn.classList.add('btn-success');
+      this.submitBtn.classList.remove('btn-warning');
+    }
+
     this.formTitleHtmlElement.innerText = this.props.title;
     this.submitBtn.innerText = this.props.submitBtnText;
 
     this.brandSelectField.updateProps({ initialValue: brand });
     this.modelSelectField.updateProps({ initialValue: model });
+
     this.priceTextField.updateProps({ initialValue: String(price) });
     this.yearTextField.updateProps({ initialValue: String(year) });
   };
