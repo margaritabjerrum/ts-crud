@@ -44,7 +44,7 @@ class FormSelectField {
       <select 
         class="form-select" 
         id="${this.id}" 
-        name="${this.props.name}" 
+        name="${this.props.name}">
         ${optionsHtml}`;
   };
 
